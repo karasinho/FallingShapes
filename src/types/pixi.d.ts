@@ -13,4 +13,9 @@ declare module 'pixi.js' {
     __isRemoving?: boolean
     __base_area?: number
   }
+  interface Texture {
+    kind?: ShapeKind
+    __isRemoving?: boolean
+    __base_area?: number
+  }
 }

@@ -1,13 +1,10 @@
 <script setup lang="ts">
-  import { initPixiApp } from '../PixiEngine'
+  import { initPixiApp } from '#root/engine/InitPixiApp'
   import type { PixiStats } from '#types'
   import { ref, onBeforeUnmount, reactive, watch, onMounted } from 'vue'
-  import heroImg from '../assets/title.jpg'
+  import heroImg from '#root/assets/title.jpg'
+  import type { PixiAppApi } from '#types'
 
-  type PixiAppApi = {
-    updateSettings: (patch: Partial<{ gravity: number; creation_limit: number }>) => void
-    subscribeStats: (cb: (stats: PixiStats) => void) => () => void
-  }
   const settings = reactive({
     gravity: 50,
     creation_limit: 1,
@@ -43,6 +40,7 @@
 
   onBeforeUnmount(() => {
     unsubscribeStats?.()
+    pixiApi.value?.destroyApp()
   })
 
   function increaseLimit() {

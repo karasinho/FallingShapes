@@ -1,16 +1,36 @@
 import { Application, Container, Graphics, Sprite } from 'pixi.js'
-import { createSoundApi, ShapePool, Utils } from '../PixiEngine'
 
-export type Engine = {
+import SoundService from '#root/services/SoudSevrice'
+import { ShapePool } from '#root/systems/PoolSystem'
+import { Utils } from '#root/services/StatsService'
+
+export type PixiAppApi = {
+  updateSettings: (patch: Partial<{ gravity: number; creation_limit: number }>) => void
+  subscribeStats: (cb: (stats: PixiStats) => void) => () => void
+  destroyApp: () => void
+}
+
+export type EngineBase = {
   app: Application
-  pool: ShapePool
-  utils: Utils
+  sounds: SoundService
+  spawnArea: Container
   active_shapes: Sprite[]
   settings: PixiSettings
   currentColors: Record<ShapeKind, number>
-  spawnArea: Container
-  sounds: ReturnType<typeof createSoundApi>
 }
+
+export type EngineReadyFields = {
+  pool: ShapePool
+  utils: Utils
+  destroyApp: () => void
+}
+
+export type EngineDraft = EngineBase & Partial<EngineReadyFields>
+
+export type Engine = EngineBase &
+  EngineReadyFields & {
+    __ready: true
+  }
 export type PixiStats = {
   activeShapesCount: number
   activeShapesAreaPx: number
@@ -31,4 +51,5 @@ export type PixiSettings = {
   creation_limit: number
   pool_size: number
   circle_radius: number
+  sound_volume: number
 }
