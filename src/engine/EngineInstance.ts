@@ -6,7 +6,6 @@ let pendingEngine: Promise<Engine> | null = null
 
 export async function getOrCreateEngine(canvas_wr: HTMLDivElement): Promise<Engine> {
   if (cachedEngine) {
-    // якщо canvas вже відчепили/перемалювали, просто перевставляємо
     if (cachedEngine.app.canvas.parentElement !== canvas_wr) {
       canvas_wr.replaceChildren(cachedEngine.app.canvas)
     }
