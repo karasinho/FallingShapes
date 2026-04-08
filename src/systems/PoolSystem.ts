@@ -111,18 +111,19 @@ export class ShapeFactory {
     sprite.visible = false
 
     sprite.on('pointertap', (e: FederatedPointerEvent) => {
+      e.stopPropagation()
       if (!sprite.kind) {
         return
       }
       if (sprite.__isRemoving) {
         return
       }
-      e.stopPropagation()
 
       const newColor = sprite.kind === 'tyan' ? 0xffffff : ShapeFactory.getRandomColor()
       this.engine.currentColors[sprite.kind] = newColor
       sprite.__isRemoving = true
       this.recolorAll(kind, newColor)
+      sprite.eventMode = 'none'
       if (kind === 'tyan') {
         this.engine.sounds.playTyan()
       } else {
@@ -249,7 +250,7 @@ export class ShapePool {
     gsap.killTweensOf(sprite.scale)
     sprite.tint = sprite.kind === 'tyan' ? 0xffffff : (ShapeFactory.getRandomColor() ?? '0xffffff')
     sprite.visible = true
-
+    sprite.eventMode = 'static'
     sprite.rotation = Math.random() * Math.PI * 2
 
     const random_scale = randFloat(0.5, 1.2)
