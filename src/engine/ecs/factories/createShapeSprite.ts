@@ -14,6 +14,84 @@ type DrawPolygonOptions = {
   strokeWidth?: number
 }
 
+export async function createShapeSprite(world: WorldBase, kind: ShapeKind) {
+  let texture
+
+  if (kind === 'tyan') {
+    texture = await Assets.load(tyan_img)
+    ;(texture as any).__base_area = texture.width * texture.height
+  } else {
+    const g = new Graphics()
+    const radius = world.resources.settings.circle_radius
+
+    switch (kind) {
+      case 'triangle':
+        drawPolygon({
+          g,
+          sides: 3,
+          radius,
+          fillColor: getRandomColor(),
+        })
+        break
+
+      case 'quad':
+        drawPolygon({
+          g,
+          sides: 4,
+          radius,
+          fillColor: getRandomColor(),
+        })
+        break
+
+      case 'pentagon':
+        drawPolygon({
+          g,
+          sides: 5,
+          radius,
+          fillColor: getRandomColor(),
+        })
+        break
+
+      case 'hexagon':
+        drawPolygon({
+          g,
+          sides: 6,
+          radius,
+          fillColor: getRandomColor(),
+        })
+        break
+
+      case 'circle': {
+        g.circle(0, 0, radius).fill(getRandomColor())
+        ;(g as any).__base_area = Math.PI * radius * radius
+        break
+      }
+
+      case 'ellipse': {
+        g.ellipse(0, 0, radius, radius / 1.5).fill(getRandomColor())
+        ;(g as any).__base_area = (Math.PI * radius * radius) / 1.5
+        break
+      }
+
+      case 'blob':
+        drawBlob(g, world)
+        break
+    }
+
+    texture = getTextureFromGraphics(world, g)
+  }
+
+  const sprite = new Sprite(texture)
+  sprite.anchor.set(0.5)
+  sprite.visible = false
+  sprite.eventMode = 'none'
+
+  return {
+    sprite,
+    baseArea: (texture as any).__base_area ?? 0,
+  }
+}
+
 function getRandomColor(): number {
   return Math.floor(Math.random() * 0xffffff)
 }
@@ -112,82 +190,4 @@ function getTextureFromGraphics(world: WorldBase, g: Graphics) {
   g.destroy()
 
   return texture
-}
-
-export async function createShapeSprite(world: WorldBase, kind: ShapeKind) {
-  let texture
-
-  if (kind === 'tyan') {
-    texture = await Assets.load(tyan_img)
-    ;(texture as any).__base_area = texture.width * texture.height
-  } else {
-    const g = new Graphics()
-    const radius = world.resources.settings.circle_radius
-
-    switch (kind) {
-      case 'triangle':
-        drawPolygon({
-          g,
-          sides: 3,
-          radius,
-          fillColor: getRandomColor(),
-        })
-        break
-
-      case 'quad':
-        drawPolygon({
-          g,
-          sides: 4,
-          radius,
-          fillColor: getRandomColor(),
-        })
-        break
-
-      case 'pentagon':
-        drawPolygon({
-          g,
-          sides: 5,
-          radius,
-          fillColor: getRandomColor(),
-        })
-        break
-
-      case 'hexagon':
-        drawPolygon({
-          g,
-          sides: 6,
-          radius,
-          fillColor: getRandomColor(),
-        })
-        break
-
-      case 'circle': {
-        g.circle(0, 0, radius).fill(getRandomColor())
-        ;(g as any).__base_area = Math.PI * radius * radius
-        break
-      }
-
-      case 'ellipse': {
-        g.ellipse(0, 0, radius, radius / 1.5).fill(getRandomColor())
-        ;(g as any).__base_area = (Math.PI * radius * radius) / 1.5
-        break
-      }
-
-      case 'blob':
-        drawBlob(g, world)
-        break
-    }
-
-    texture = getTextureFromGraphics(world, g)
-  }
-
-  const sprite = new Sprite(texture)
-  sprite.anchor.set(0.5)
-  sprite.visible = false
-  sprite.eventMode = 'none'
-
-  return {
-    sprite,
-    baseArea: (texture as any).__base_area ?? 0,
-  }
 }

@@ -45,7 +45,9 @@ export async function createShapeEntity(world: World, x: number, y: number, anim
     scaleY: randomScale,
   })
 
-  world.velocities.set(entity, { vx: 0, vy: 0 })
+  const init_vy = animate ? 0 : 100
+
+  world.velocities.set(entity, { vx: 0, vy: init_vy })
   world.gravities.set(entity, { value: world.resources.settings.gravity })
   world.shapes.set(entity, {
     kind,
