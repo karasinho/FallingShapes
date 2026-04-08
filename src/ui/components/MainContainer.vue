@@ -181,6 +181,10 @@
     display: flex;
     justify-content: center;
     width: 100%;
+
+    @media (max-height: 600px) {
+      display: none;
+    }
   }
 
   .hero img {

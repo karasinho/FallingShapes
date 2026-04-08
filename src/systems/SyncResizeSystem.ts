@@ -6,13 +6,31 @@ function syncEngineBounds(engine: Engine) {
 }
 
 export function initResizeSystem(engine: Engine) {
-  const onResize = () => {
-    syncEngineBounds(engine)
+  let timeoutId: number | null = null
+
+  const sync = () => {
+    requestAnimationFrame(() => {
+      syncEngineBounds(engine)
+    })
+
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+
+    timeoutId = window.setTimeout(() => {
+      syncEngineBounds(engine)
+    }, 250)
   }
 
-  window.addEventListener('resize', onResize)
+  window.addEventListener('resize', sync)
+  window.addEventListener('orientationchange', sync)
 
   return () => {
-    window.removeEventListener('resize', onResize)
+    window.removeEventListener('resize', sync)
+    window.removeEventListener('orientationchange', sync)
+
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
   }
 }
