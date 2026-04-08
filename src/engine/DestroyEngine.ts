@@ -1,9 +1,11 @@
 import { Engine } from '#types'
 import gsap from 'gsap'
 
-export function initDestroyFunc(engine: Engine, destroyTicker: () => void) {
+export function initDestroyFunc(engine: Engine, destroyers: Function[]) {
   return () => {
-    destroyTicker?.()
+    destroyers.forEach((fn) => {
+      fn()
+    })
 
     engine.spawnArea.removeAllListeners()
 

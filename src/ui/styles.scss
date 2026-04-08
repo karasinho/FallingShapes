@@ -9,11 +9,8 @@ body {
 }
 
 html,
-body {
-  touch-action: manipulation;
-  overscroll-behavior: none;
-}
-
+body,
 #app {
-  touch-action: manipulation;
+  touch-action: none;
+  overscroll-behavior: none;
 }

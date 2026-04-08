@@ -1,6 +1,6 @@
 import { PixiSettings } from '#types'
 export const DEFAULTS = {
-  gravity: 150,
+  gravity: 100,
   creation_limit: 1,
   pool_size: 50,
   circle_radius: 30,

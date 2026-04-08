@@ -111,6 +111,7 @@ export class ShapeFactory {
     sprite.visible = false
 
     sprite.on('pointertap', (e: FederatedPointerEvent) => {
+      e.preventDefault()
       e.stopPropagation()
       if (!sprite.kind) {
         return

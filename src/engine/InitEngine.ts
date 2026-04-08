@@ -7,6 +7,7 @@ import SoundService from '../services/SoudSevrice'
 import { initTicker } from '#root/systems/TickerSystem'
 import { getDefaultSettings } from './defaults'
 import { initDestroyFunc } from './DestroyEngine'
+import { initResizeSystem } from '#root/systems/SyncResizeSystem'
 
 export async function initEngine(canvas_wr: HTMLDivElement) {
   const app = new Application()
@@ -42,18 +43,25 @@ export async function initEngine(canvas_wr: HTMLDivElement) {
 
   assertEngineReady(engine)
 
-  const destroyTicker: (() => void) | undefined = initTicker(engine)
+  const destroyers: Function[] = []
 
-  engine.destroyApp = initDestroyFunc(engine, destroyTicker)
+  const destroyResizeSystem = initResizeSystem(engine)
+  const destroyTicker = initTicker(engine)
+  destroyers.push(destroyResizeSystem)
+  destroyers.push(destroyTicker)
+
+  engine.destroyApp = initDestroyFunc(engine, destroyers)
 
   canvas_wr.appendChild(app.canvas)
 
   const spawnArea = engine.spawnArea
 
   spawnArea.eventMode = 'static'
-  spawnArea.hitArea = new Rectangle(0, 0, app.canvas.width, app.canvas.height)
+  spawnArea.hitArea = new Rectangle(0, 0, app.screen.width, app.screen.height)
 
   spawnArea.on('pointertap', (e: FederatedPointerEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
     const pos = e.getLocalPosition(spawnArea)
     engine.pool.spawnShape(pos.x, pos.y, true)
     engine.sounds.playSpawn()
