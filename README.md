@@ -1,5 +1,9 @@
 # Falling Shapes
 
+Screenshot:
+
+![FallingShapes screenshot](./screenshots/preview.png)
+
 A small Vue + TypeScript + PixiJS demo that renders animated falling shapes, supports click interactions, random colors, sound effects, and a small control panel for gravity / generation rate.
 
 ## Stack

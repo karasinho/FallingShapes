@@ -2,9 +2,12 @@
   "include": ["./src/**/*.ts", "./src/**/*.tsx", "./src/**/*.vue", "./src/types/**/*.d.ts"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
+    "noEmit": true,
     "paths": {
       "#types": ["./src/types/types.ts"]
     },
+    "outDir": "./dist-ts",
+    "rootDir": "./src",
     "skipLibCheck": true,
     "typeRoots": ["node_modules/@types", "./src/types"]
   }

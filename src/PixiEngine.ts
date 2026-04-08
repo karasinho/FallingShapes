@@ -126,7 +126,7 @@ export class ShapeFactory {
         return
       }
       e.stopPropagation()
-      console.log('ahspe click')
+
       const newColor = sprite.kind === 'tyan' ? 0xffffff : ShapeFactory.getRandomColor()
       this.engine.currentColors[sprite.kind] = newColor
       sprite.__isRemoving = true
@@ -257,13 +257,16 @@ export class ShapePool {
     gsap.killTweensOf(sprite.scale)
     sprite.tint = sprite.kind === 'tyan' ? 0xffffff : (ShapeFactory.getRandomColor() ?? '0xffffff')
     sprite.visible = true
-    sprite.x = x
-    sprite.y = y
+
     sprite.rotation = Math.random() * Math.PI * 2
 
     const random_scale = randFloat(0.5, 1.2)
     sprite.scale.set(random_scale)
+    sprite.removeFromParent()
     this.engine?.spawnArea.addChild(sprite)
+    sprite.position.set(x, y)
+    // sprite.x = x
+    // sprite.y = y
     this.engine?.active_shapes.push(sprite)
 
     if (animate) {
@@ -293,7 +296,6 @@ export class ShapePool {
     if (!this.app) {
       return
     }
-    console.log('🚀 ~ warmup ~ kind:', kind)
     for (let i = 0; i < count; i++) {
       const sprite = await this.factory?.create(kind)
       if (!sprite) {
@@ -345,12 +347,34 @@ export class Utils {
     if (!this.engine) {
       return
     }
-    const area = this.calcActiveShapesArea() || 0
+    const visible_shapes = this.getVisibleShapes()
+    const area = this.calcActiveShapesArea(visible_shapes) || 0
     this.statsListener?.({
       activeShapesCount: this.engine.active_shapes.length,
       activeShapesAreaPx: +area.toFixed(0),
       gravity: this.engine.settings.gravity,
-      creation_number: this.engine.active_shapes.length,
+      creation_number: visible_shapes.length,
+    })
+  }
+
+  isShapeVisible(shape: Sprite) {
+    if (!this.engine) {
+      return
+    }
+    const screenW = this.engine.app.screen.width
+    const screenH = this.engine.app.screen.height
+
+    const bounds = shape.getBounds()
+
+    return !(bounds.x + bounds.width < 0 || bounds.x > screenW || bounds.y + bounds.height < 0 || bounds.y > screenH)
+  }
+
+  getVisibleShapes() {
+    if (!this.engine) {
+      return []
+    }
+    return this.engine.active_shapes.filter((spr) => {
+      return this.isShapeVisible(spr)
     })
   }
 
@@ -373,11 +397,11 @@ export class Utils {
     }
   }
 
-  calcActiveShapesArea() {
+  calcActiveShapesArea(visible_shapes: Sprite[]) {
     if (!this.engine) {
       return
     }
-    const res = this.engine.active_shapes.reduce((acc, shape) => {
+    const res = visible_shapes.reduce((acc, shape) => {
       acc += shape.__base_area ?? 0 * shape.scale.x * shape.scale.y
 
       return acc
@@ -429,7 +453,6 @@ async function initEngine(canvas_wr: HTMLDivElement) {
   spawnArea.hitArea = new Rectangle(0, 0, app.canvas.width, app.canvas.height)
 
   spawnArea.on('pointertap', (e: FederatedPointerEvent) => {
-    console.log('click')
     const pos = e.getLocalPosition(spawnArea)
     engine.pool.spawnShape(pos.x, pos.y, true)
     engine.sounds.playSpawn()
@@ -491,7 +514,7 @@ function initTicker(engine: Engine) {
 
       const area = engine.spawnArea.hitArea as Rectangle
       const x = area.x + 100 + Math.random() * (area.width - 150)
-      const y = -150
+      const y = -70
 
       engine.pool.spawnShape(x, y)
     }
@@ -501,7 +524,7 @@ function initTicker(engine: Engine) {
 
       shape.y += engine.settings.gravity * dt
 
-      if (shape.y > engine.app.screen.height + 300) {
+      if (shape.y > engine.app.screen.height + 100) {
         engine.pool.release(shape)
       }
     }

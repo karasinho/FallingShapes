@@ -25,7 +25,6 @@
 
   let unsubscribeStats: null | (() => void) = null
 
-  console.log('🚀 ~ onMounted:')
   onMounted(async () => {
     if (!canvas_wr.value) return
 
