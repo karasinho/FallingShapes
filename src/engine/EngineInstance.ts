@@ -1,45 +1,46 @@
-import type { Engine } from '#types'
-import { initEngine } from './InitEngine'
+import type { World } from '#types'
+import { createWorld } from './ecs/createWorld'
+import { destroyWorld } from './ecs/destroyWorld'
 
-let cachedEngine: Engine | null = null
-let pendingEngine: Promise<Engine> | null = null
+let cachedWorld: World | null = null
+let pendingWorld: Promise<World> | null = null
+let cleanupFns: Function[] = []
 
-export async function getOrCreateEngine(canvas_wr: HTMLDivElement): Promise<Engine> {
-  if (cachedEngine) {
-    if (cachedEngine.app.canvas.parentElement !== canvas_wr) {
-      canvas_wr.replaceChildren(cachedEngine.app.canvas)
+export async function getOrCreateWorld(canvas_wr: HTMLDivElement): Promise<World> {
+  if (cachedWorld) {
+    if (cachedWorld.resources.app.canvas.parentElement !== canvas_wr) {
+      canvas_wr.replaceChildren(cachedWorld.resources.app.canvas)
     }
-    return cachedEngine
+    return cachedWorld
   }
 
-  if (pendingEngine) {
-    const engine = await pendingEngine
-
-    if (engine.app.canvas.parentElement !== canvas_wr) {
-      canvas_wr.replaceChildren(engine.app.canvas)
+  if (pendingWorld) {
+    const world = await pendingWorld
+    if (world.resources.app.canvas.parentElement !== canvas_wr) {
+      canvas_wr.replaceChildren(world.resources.app.canvas)
     }
-
-    return engine
+    return world
   }
 
-  pendingEngine = initEngine(canvas_wr)
+  pendingWorld = (async () => {
+    const created = await createWorld(canvas_wr)
+    cleanupFns = [created.destroy]
+    return created.world
+  })()
 
   try {
-    const engine = await pendingEngine
-    cachedEngine = engine
-    return engine
+    const world = await pendingWorld
+    cachedWorld = world
+    return world
   } finally {
-    pendingEngine = null
+    pendingWorld = null
   }
 }
 
-export function getCachedEngine(): Engine | null {
-  return cachedEngine
-}
-
-export function destroyCachedEngine() {
-  if (!cachedEngine) return
-  cachedEngine.destroyApp?.()
-  cachedEngine = null
-  pendingEngine = null
+export function destroyCachedWorld() {
+  if (!cachedWorld) return
+  destroyWorld(cachedWorld, cleanupFns)
+  cachedWorld = null
+  pendingWorld = null
+  cleanupFns = []
 }

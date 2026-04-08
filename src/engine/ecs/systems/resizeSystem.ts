@@ -1,24 +1,27 @@
 import { Rectangle } from 'pixi.js'
-import type { Engine } from '#types'
+import type { World } from '#types'
 
-function syncEngineBounds(engine: Engine) {
-  engine.spawnArea.hitArea = new Rectangle(0, 0, engine.app.screen.width, engine.app.screen.height)
+function syncWorldBounds(world: World) {
+  world.resources.spawnArea.hitArea = new Rectangle(
+    0,
+    0,
+    world.resources.app.screen.width,
+    world.resources.app.screen.height,
+  )
 }
 
-export function initResizeSystem(engine: Engine) {
+export function initResizeSystem(world: World) {
   let timeoutId: number | null = null
 
   const sync = () => {
     requestAnimationFrame(() => {
-      syncEngineBounds(engine)
+      syncWorldBounds(world)
     })
 
-    if (timeoutId) {
-      clearTimeout(timeoutId)
-    }
+    if (timeoutId) clearTimeout(timeoutId)
 
     timeoutId = window.setTimeout(() => {
-      syncEngineBounds(engine)
+      syncWorldBounds(world)
     }, 250)
   }
 
@@ -29,8 +32,6 @@ export function initResizeSystem(engine: Engine) {
     window.removeEventListener('resize', sync)
     window.removeEventListener('orientationchange', sync)
 
-    if (timeoutId) {
-      clearTimeout(timeoutId)
-    }
+    if (timeoutId) clearTimeout(timeoutId)
   }
 }

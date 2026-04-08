@@ -1,13 +1,61 @@
 import { Application, Container, Graphics, Sprite } from 'pixi.js'
 
 import SoundService from '#root/services/SoudSevrice'
-import { ShapePool } from '#root/systems/PoolSystem'
-import { Utils } from '#root/services/StatsService'
 
 export type PixiAppApi = {
   updateSettings: (patch: Partial<{ gravity: number; creation_limit: number }>) => void
   subscribeStats: (cb: (stats: PixiStats) => void) => () => void
   destroyApp: () => void
+}
+export type TransformComponent = {
+  x: number
+  y: number
+  rotation: number
+  scaleX: number
+  scaleY: number
+}
+
+export type VelocityComponent = {
+  vx: number
+  vy: number
+}
+
+export type GravityComponent = {
+  value: number
+}
+
+export type ShapeComponent = {
+  kind: ShapeKind
+  baseArea: number
+  color: number
+}
+
+export type RenderableComponent = {
+  sprite: Sprite
+}
+export type Entity = number
+
+export type World = {
+  nextEntityId: number
+  entities: Set<Entity>
+
+  transforms: Map<Entity, TransformComponent>
+  velocities: Map<Entity, VelocityComponent>
+  gravities: Map<Entity, GravityComponent>
+  shapes: Map<Entity, ShapeComponent>
+  renderables: Map<Entity, RenderableComponent>
+  clickables: Set<Entity>
+  removing: Set<Entity>
+
+  resources: {
+    app: Application
+    spawnArea: Container
+    settings: PixiSettings
+    sounds: SoundService
+    currentColors: Record<ShapeKind, number>
+    statsListener?: (stats: PixiStats) => void
+    spawnAccumulator: number
+  }
 }
 
 export type EngineBase = {
@@ -19,18 +67,11 @@ export type EngineBase = {
   currentColors: Record<ShapeKind, number>
 }
 
-export type EngineReadyFields = {
-  pool: ShapePool
-  utils: Utils
-  destroyApp: () => void
+export type EngineDraft = EngineBase
+
+export type Engine = EngineBase & {
+  __ready: true
 }
-
-export type EngineDraft = EngineBase & Partial<EngineReadyFields>
-
-export type Engine = EngineBase &
-  EngineReadyFields & {
-    __ready: true
-  }
 export type PixiStats = {
   activeShapesCount: number
   activeShapesAreaPx: number
