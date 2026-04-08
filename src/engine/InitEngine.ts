@@ -34,6 +34,9 @@ export async function initEngine(canvas_wr: HTMLDivElement) {
     backgroundAlpha: 0,
   })
 
+  app.renderer.events.autoPreventDefault = true
+  app.canvas.style.touchAction = 'none'
+
   engine.pool = new ShapePool(engine)
   engine.utils = new Utils(engine)
 

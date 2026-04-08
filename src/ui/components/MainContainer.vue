@@ -25,6 +25,8 @@
   onMounted(async () => {
     if (!canvas_wr.value) return
 
+    disableDoubleTapZoom()
+
     const api = await initPixiApp(canvas_wr.value)
     pixiApi.value = api
 
@@ -42,6 +44,32 @@
     unsubscribeStats?.()
     pixiApi.value?.destroyApp()
   })
+
+  function disableDoubleTapZoom() {
+    let lastTouchEnd = 0
+
+    const onTouchEnd = (e: TouchEvent) => {
+      const now = Date.now()
+
+      if (now - lastTouchEnd <= 350) {
+        e.preventDefault()
+      }
+
+      lastTouchEnd = now
+    }
+
+    const onGestureStart = (e: Event) => {
+      e.preventDefault()
+    }
+
+    document.addEventListener('touchend', onTouchEnd, { passive: false })
+    document.addEventListener('gesturestart', onGestureStart, { passive: false } as AddEventListenerOptions)
+
+    return () => {
+      document.removeEventListener('touchend', onTouchEnd)
+      document.removeEventListener('gesturestart', onGestureStart as EventListener)
+    }
+  }
 
   function increaseLimit() {
     settings.creation_limit += 1
@@ -189,6 +217,7 @@
         overflow: hidden;
         // border: 3px solid red;
         border-radius: 0.4rem;
+        touch-action: none;
         background: url('/src/assets/background_canvas.jpg') center / cover no-repeat;
       }
 
@@ -220,6 +249,11 @@
               height: 2rem;
               font-size: 1.2rem;
               cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              line-height: 1;
             }
             .inc_btn {
               background-color: rgb(108, 11, 150);

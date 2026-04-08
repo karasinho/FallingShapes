@@ -7,3 +7,13 @@ body {
   height: 100dvh;
   border: none;
 }
+
+html,
+body {
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+#app {
+  touch-action: manipulation;
+}
