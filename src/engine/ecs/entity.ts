@@ -1,4 +1,4 @@
-import type { Entity, World } from '#types'
+import type { Entity, World, WorldBase } from '#types'
 
 export function createEntity(world: World): Entity {
   const id = world.nextEntityId++
@@ -6,7 +6,7 @@ export function createEntity(world: World): Entity {
   return id
 }
 
-export function destroyEntity(world: World, entity: Entity) {
+export function destroyEntity(world: WorldBase, entity: Entity) {
   world.entities.delete(entity)
 
   world.transforms.delete(entity)

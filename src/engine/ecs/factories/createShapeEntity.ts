@@ -2,6 +2,7 @@ import { gsap } from 'gsap'
 import { createEntity } from '../entity'
 import type { ShapeKind, World } from '#types'
 import { FederatedPointerEvent } from 'pixi.js'
+import { ShapePool } from '../pools/ShapePool'
 
 function randFloat(min: number, max: number) {
   return min + Math.random() * (max - min)
@@ -17,7 +18,7 @@ function getRandomKind(): ShapeKind {
 }
 
 export async function createShapeEntity(world: World, x: number, y: number, animate = false) {
-  const pool = (world.resources as typeof world.resources & { pool: any }).pool
+  const pool = (world.resources as typeof world.resources & { pool: ShapePool }).pool
   const kind = getRandomKind()
   const pooled = await pool.get(kind)
 

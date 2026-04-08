@@ -1,6 +1,7 @@
 import { Application, Container, Graphics, Sprite } from 'pixi.js'
 
 import SoundService from '#root/services/SoudSevrice'
+import { ShapePool } from '#root/engine/ecs/pools/ShapePool'
 
 export type PixiAppApi = {
   updateSettings: (patch: Partial<{ gravity: number; creation_limit: number }>) => void
@@ -35,7 +36,22 @@ export type RenderableComponent = {
 }
 export type Entity = number
 
-export type World = {
+export type WorldResourcesBase = {
+  app: Application
+  spawnArea: Container
+  settings: PixiSettings
+  sounds: SoundService
+  currentColors: Record<ShapeKind, number>
+  statsListener?: (stats: PixiStats) => void
+  spawnAccumulator: number
+  pool?: ShapePool
+}
+
+export type WorldResourcesReady = WorldResourcesBase & {
+  pool: ShapePool
+}
+
+export type WorldBase = {
   nextEntityId: number
   entities: Set<Entity>
 
@@ -47,15 +63,12 @@ export type World = {
   clickables: Set<Entity>
   removing: Set<Entity>
 
-  resources: {
-    app: Application
-    spawnArea: Container
-    settings: PixiSettings
-    sounds: SoundService
-    currentColors: Record<ShapeKind, number>
-    statsListener?: (stats: PixiStats) => void
-    spawnAccumulator: number
-  }
+  resources: WorldResourcesBase
+}
+
+export type World = Omit<WorldBase, 'resources'> & {
+  resources: WorldResourcesReady
+  __ready: true
 }
 
 export type EngineBase = {

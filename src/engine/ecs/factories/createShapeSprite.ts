@@ -3,7 +3,7 @@ import { GlowFilter } from 'pixi-filters'
 
 import tyan_img from '#root/assets/tyan.png'
 import { DEFAULTS } from '#root/engine/defaults'
-import type { ShapeKind, World } from '#types'
+import type { ShapeKind, World, WorldBase } from '#types'
 
 type DrawPolygonOptions = {
   g: Graphics
@@ -35,7 +35,7 @@ function polygonArea(points: number[]): number {
   return Math.abs(area) / 2
 }
 
-function drawBlob(g: Graphics, world: World) {
+function drawBlob(g: Graphics, world: WorldBase) {
   const points: number[] = []
   const segments = 20
   const baseRadius = world.resources.settings.circle_radius
@@ -79,7 +79,7 @@ function drawPolygon({
   g.stroke({ color: strokeColor, width: strokeWidth })
 }
 
-function getTextureFromGraphics(world: World, g: Graphics) {
+function getTextureFromGraphics(world: WorldBase, g: Graphics) {
   const glowDistance = DEFAULTS.glow_distance
   const glowPadding = glowDistance * 2
 
@@ -114,7 +114,7 @@ function getTextureFromGraphics(world: World, g: Graphics) {
   return texture
 }
 
-export async function createShapeSprite(world: World, kind: ShapeKind) {
+export async function createShapeSprite(world: WorldBase, kind: ShapeKind) {
   let texture
 
   if (kind === 'tyan') {

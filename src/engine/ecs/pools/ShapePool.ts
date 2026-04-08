@@ -1,5 +1,5 @@
 import { gsap } from 'gsap'
-import type { ShapeKind, World, Entity } from '#types'
+import type { ShapeKind, World, Entity, WorldBase } from '#types'
 import { createShapeSprite } from '../factories/createShapeSprite'
 import { destroyEntity } from '../entity'
 import { Sprite } from 'pixi.js'
@@ -11,7 +11,7 @@ type PooledShape = {
 }
 
 export class ShapePool {
-  private world: World
+  private world: WorldBase
 
   private pools: Record<ShapeKind, PooledShape[]> = {
     triangle: [],
@@ -24,7 +24,7 @@ export class ShapePool {
     tyan: [],
   }
 
-  constructor(world: World) {
+  constructor(world: WorldBase) {
     this.world = world
   }
 

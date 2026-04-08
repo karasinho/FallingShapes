@@ -1,7 +1,7 @@
 import { Application, Container, Rectangle, FederatedPointerEvent } from 'pixi.js'
 import { getDefaultSettings } from '#root/engine/defaults'
 import SoundService from '#root/services/SoudSevrice'
-import type { World } from '#types'
+import type { World, WorldBase } from '#types'
 import { createShapeEntity } from './factories/createShapeEntity'
 import { ShapePool } from './pools/ShapePool'
 import { initResizeSystem } from './systems/resizeSystem'
@@ -21,7 +21,7 @@ export async function createWorld(canvas_wr: HTMLDivElement) {
   spawnArea.eventMode = 'static'
   spawnArea.hitArea = new Rectangle(0, 0, app.screen.width, app.screen.height)
 
-  const world: World = {
+  const world: WorldBase = {
     nextEntityId: 1,
     entities: new Set(),
 
@@ -40,21 +40,22 @@ export async function createWorld(canvas_wr: HTMLDivElement) {
       sounds: new SoundService(),
       spawnAccumulator: 0,
       currentColors: {
-        triangle: Math.floor(Math.random() * 0xffffff),
-        quad: Math.floor(Math.random() * 0xffffff),
-        pentagon: Math.floor(Math.random() * 0xffffff),
-        hexagon: Math.floor(Math.random() * 0xffffff),
-        circle: Math.floor(Math.random() * 0xffffff),
-        ellipse: Math.floor(Math.random() * 0xffffff),
-        blob: Math.floor(Math.random() * 0xffffff),
-        tyan: Math.floor(Math.random() * 0xffffff),
+        triangle: getDefaultColor(),
+        quad: getDefaultColor(),
+        pentagon: getDefaultColor(),
+        hexagon: getDefaultColor(),
+        circle: getDefaultColor(),
+        ellipse: getDefaultColor(),
+        blob: getDefaultColor(),
+        tyan: getDefaultColor(),
       },
     },
   }
 
-  const pool = new ShapePool(world)
-  await pool.warmupAll()
-  ;(world.resources as typeof world.resources & { pool: ShapePool }).pool = pool
+  world.resources.pool = new ShapePool(world)
+
+  await world.resources.pool.warmupAll()
+  assertWorldReady(world)
 
   spawnArea.on('pointertap', async (e: FederatedPointerEvent) => {
     e.preventDefault()
@@ -78,4 +79,35 @@ export async function createWorld(canvas_wr: HTMLDivElement) {
       destroyResize()
     },
   }
+}
+function getDefaultColor() {
+  return Math.floor(Math.random() * 0xffffff)
+}
+
+export function assertWorldReady(world: WorldBase): asserts world is World {
+  if (!world.resources.app) {
+    throw new Error('World.resources.app is not initialized')
+  }
+
+  if (!world.resources.spawnArea) {
+    throw new Error('World.resources.spawnArea is not initialized')
+  }
+
+  if (!world.resources.settings) {
+    throw new Error('World.resources.settings is not initialized')
+  }
+
+  if (!world.resources.sounds) {
+    throw new Error('World.resources.sounds is not initialized')
+  }
+
+  if (!world.resources.currentColors) {
+    throw new Error('World.resources.currentColors is not initialized')
+  }
+
+  if (!('pool' in world.resources) || !world.resources.pool) {
+    throw new Error('World.resources.pool is not initialized')
+  }
+
+  ;(world as World).__ready = true
 }
