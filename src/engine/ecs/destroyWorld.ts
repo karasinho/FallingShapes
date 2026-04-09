@@ -2,9 +2,7 @@ import { gsap } from 'gsap'
 import type { World } from '#types'
 
 export function destroyWorld(world: World, cleanupFns: Function[]) {
-  for (const fn of cleanupFns) {
-    fn()
-  }
+  cleanupFns.forEach((fn) => fn())
 
   world.resources.spawnArea.removeAllListeners()
 
@@ -16,8 +14,7 @@ export function destroyWorld(world: World, cleanupFns: Function[]) {
     sprite.destroy()
   }
 
-  const pool = (world.resources as typeof world.resources & { pool?: any }).pool
-  pool?.destroy?.()
+  world.resources.pool.destroy?.()
 
   world.resources.app.stage.removeChildren().forEach((child) => {
     child.removeAllListeners()

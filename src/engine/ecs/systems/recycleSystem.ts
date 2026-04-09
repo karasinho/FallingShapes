@@ -1,8 +1,6 @@
 import type { World } from '#types'
-import { ShapePool } from '../pools/ShapePool'
 
 export function recycleSystem(world: World) {
-  const pool = (world.resources as typeof world.resources & { pool: ShapePool }).pool
   const toRelease: number[] = []
 
   for (const entity of world.entities) {
@@ -15,6 +13,6 @@ export function recycleSystem(world: World) {
   }
 
   for (const entity of toRelease) {
-    pool.release(entity)
+    world.resources.pool.release(entity)
   }
 }

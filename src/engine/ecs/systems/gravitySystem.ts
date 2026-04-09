@@ -6,6 +6,6 @@ export function gravitySystem(world: World, dt: number) {
     const gravity = world.gravities.get(entity)
     if (!velocity || !gravity) continue
 
-    velocity.vy += gravity.value * dt
+    velocity.vy += Math.abs(gravity.value) * dt
   }
 }

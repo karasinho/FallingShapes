@@ -1,6 +1,6 @@
 import { Application, Container, Graphics, Sprite } from 'pixi.js'
 
-import SoundService from '#root/services/SoudSevrice'
+import SoundService from '#root/services/SoundSevrice'
 import { ShapePool } from '#root/engine/ecs/pools/ShapePool'
 
 export type PixiAppApi = {
@@ -106,4 +106,6 @@ export type PixiSettings = {
   pool_size: number
   circle_radius: number
   sound_volume: number
+  tick: number
+  glow_distance: number
 }

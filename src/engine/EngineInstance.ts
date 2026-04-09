@@ -38,7 +38,9 @@ export async function getOrCreateWorld(canvas_wr: HTMLDivElement): Promise<World
 }
 
 export function destroyCachedWorld() {
-  if (!cachedWorld) return
+  if (!cachedWorld) {
+    return
+  }
   destroyWorld(cachedWorld, cleanupFns)
   cachedWorld = null
   pendingWorld = null

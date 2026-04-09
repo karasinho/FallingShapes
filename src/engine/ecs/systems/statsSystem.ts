@@ -1,4 +1,4 @@
-import type { World } from '#types'
+import type { RenderableComponent, World } from '#types'
 
 export function statsSystem(world: World) {
   let visibleCount = 0
@@ -9,20 +9,13 @@ export function statsSystem(world: World) {
     const shape = world.shapes.get(entity)
     const renderable = world.renderables.get(entity)
 
-    if (!transform || !shape || !renderable) continue
+    if (!transform || !shape || !renderable) {
+      continue
+    }
 
-    const bounds = renderable.sprite.getBounds()
-    const screenW = world.resources.app.screen.width
-    const screenH = world.resources.app.screen.height
-
-    const visible = !(
-      bounds.x + bounds.width < 0 ||
-      bounds.x > screenW ||
-      bounds.y + bounds.height < 0 ||
-      bounds.y > screenH
-    )
-
-    if (!visible) continue
+    if (!isEntitiVisible(world, renderable)) {
+      continue
+    }
 
     visibleCount++
     totalArea += shape.baseArea * transform.scaleX * transform.scaleY
@@ -34,4 +27,12 @@ export function statsSystem(world: World) {
     gravity: world.resources.settings.gravity,
     creation_number: visibleCount,
   })
+}
+
+function isEntitiVisible(world: World, entity: RenderableComponent) {
+  const bounds = entity.sprite.getBounds()
+  const screenW = world.resources.app.screen.width
+  const screenH = world.resources.app.screen.height
+
+  return !(bounds.x + bounds.width < 0 || bounds.x > screenW || bounds.y + bounds.height < 0 || bounds.y > screenH)
 }

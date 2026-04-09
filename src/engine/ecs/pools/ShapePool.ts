@@ -1,5 +1,5 @@
 import { gsap } from 'gsap'
-import type { ShapeKind, World, Entity, WorldBase } from '#types'
+import type { ShapeKind, Entity, WorldBase } from '#types'
 import { createShapeSprite } from '../factories/createShapeSprite'
 import { destroyEntity } from '../entity'
 import { Sprite } from 'pixi.js'
@@ -62,8 +62,12 @@ export class ShapePool {
 
   release(entity: Entity) {
     const renderable = this.world.renderables.get(entity)
+
     const shape = this.world.shapes.get(entity)
-    if (!renderable || !shape) return
+
+    if (!renderable || !shape) {
+      return
+    }
 
     const sprite = renderable.sprite
 

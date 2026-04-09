@@ -1,6 +1,6 @@
 import { Application, Container, Rectangle, FederatedPointerEvent } from 'pixi.js'
 import { getDefaultSettings } from '#root/engine/defaults'
-import SoundService from '#root/services/SoudSevrice'
+import SoundService from '#root/services/SoundSevrice'
 import type { World, WorldBase } from '#types'
 import { createShapeEntity } from './factories/createShapeEntity'
 import { ShapePool } from './pools/ShapePool'
@@ -59,7 +59,7 @@ export async function createWorld(canvas_wr: HTMLDivElement) {
   spawnArea.on('pointertap', async (e: FederatedPointerEvent) => {
     const pos = e.getLocalPosition(spawnArea)
     await createShapeEntity(world, pos.x, pos.y, true)
-    world.resources.sounds.playSpawn()
+    world.resources.sounds.playSound('spawn')
   })
 
   app.stage.addChild(spawnArea)

@@ -7,20 +7,20 @@ export function createEntity(world: World): Entity {
 }
 
 export function destroyEntity(world: WorldBase, entity: Entity) {
-  world.entities.delete(entity)
-
-  world.transforms.delete(entity)
-  world.velocities.delete(entity)
-  world.gravities.delete(entity)
-  world.shapes.delete(entity)
-
   const renderable = world.renderables.get(entity)
   if (renderable) {
     renderable.sprite.removeAllListeners()
     renderable.sprite.removeFromParent()
   }
-
-  world.renderables.delete(entity)
-  world.clickables.delete(entity)
-  world.removing.delete(entity)
+  const stores = [
+    world.entities,
+    world.velocities,
+    world.gravities,
+    world.shapes,
+    world.renderables,
+    world.clickables,
+    world.removing,
+    world.transforms,
+  ]
+  stores.forEach((store) => store.delete(entity))
 }
