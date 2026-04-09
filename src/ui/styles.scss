@@ -11,6 +11,15 @@ body {
 html,
 body,
 #app {
-  touch-action: none;
+  touch-action: manipulation;
   overscroll-behavior: none;
+}
+button,
+a,
+input,
+select,
+textarea,
+canvas {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }

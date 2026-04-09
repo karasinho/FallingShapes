@@ -60,9 +60,6 @@ export async function createShapeEntity(world: World, x: number, y: number, anim
   pooled.sprite.tint = kind === 'tyan' ? 0xffffff : world.resources.currentColors[kind]
 
   pooled.sprite.on('pointertap', (e: FederatedPointerEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
     if (world.removing.has(entity)) return
     world.removing.add(entity)
 

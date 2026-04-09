@@ -14,8 +14,7 @@ export async function createWorld(canvas_wr: HTMLDivElement) {
     backgroundAlpha: 0,
   })
 
-  app.renderer.events.autoPreventDefault = true
-  app.canvas.style.touchAction = 'none'
+  app.canvas.style.touchAction = 'manipulation'
 
   const spawnArea = new Container()
   spawnArea.eventMode = 'static'
@@ -58,9 +57,6 @@ export async function createWorld(canvas_wr: HTMLDivElement) {
   assertWorldReady(world)
 
   spawnArea.on('pointertap', async (e: FederatedPointerEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
     const pos = e.getLocalPosition(spawnArea)
     await createShapeEntity(world, pos.x, pos.y, true)
     world.resources.sounds.playSpawn()
